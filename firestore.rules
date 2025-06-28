@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Los usuarios solo pueden leer y actualizar su propio perfil.
+    // La creación se gestiona a través de una Cloud Function (onUserCreate).
+    match /users/{userId} {
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Los usuarios solo pueden realizar operaciones CRUD en sus propias transacciones.
+    match /users/{userId}/transactions/{transactionId} {
+      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Los usuarios solo pueden realizar operaciones CRUD en sus propias categorías.
+    match /users/{userId}/categories/{categoryId} {
+      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+  }
+}
