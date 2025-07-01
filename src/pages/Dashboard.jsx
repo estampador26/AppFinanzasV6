@@ -60,6 +60,7 @@ const Dashboard = () => {
         <Link to="/budgets">Gestionar Presupuestos</Link>
         <Link to="/savings-goals">Metas de Ahorro</Link>
         <Link to="/categories">Gestionar Categorías</Link>
+        <Link to="/reports">Ver Informes</Link>
       </NavContainer>
 
       <Card>

@@ -9,6 +9,7 @@ import FinancedPurchasesPage from './features/financedPurchases/FinancedPurchase
 import BudgetsPage from './features/budgets/BudgetsPage';
 import SavingsGoalsPage from './features/savings/SavingsGoalsPage';
 import CategoriesPage from './features/categories/CategoriesPage';
+import ReportsPage from './pages/ReportsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { useAuth } from './contexts/AuthContext';
@@ -99,6 +100,7 @@ function App() {
         />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/reports" element={<PrivateRoute><ReportsPage /></PrivateRoute>} />
       </Routes>
     </Router>
   );

@@ -3,46 +3,72 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Los usuarios solo pueden leer y actualizar su propio perfil.
-    // La creación se gestiona a través de una Cloud Function (onUserCreate).
+    // Helper function to check if the user is authenticated and is the owner of the document.
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Users can only read their own user document.
+    // Creation/deletion is handled by Cloud Functions. Updates are not allowed from client.
     match /users/{userId} {
-      allow read, update: if request.auth != null && request.auth.uid == userId;
+      allow read: if isOwner(userId);
+      allow create, update, delete: if false;
     }
 
-    // Los usuarios solo pueden realizar operaciones CRUD en sus propias transacciones.
+    // --- Rules for User Subcollections ---
+
+    // This function validates that the document being created has the correct userId field.
+    // This prevents a user from creating data and assigning it to another user.
+    function hasCorrectUserId(userId) {
+      return request.resource.data.userId == userId;
+    }
+
     match /users/{userId}/transactions/{transactionId} {
-      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserId(userId);
     }
-
-    // Los usuarios solo pueden realizar operaciones CRUD en sus propias categorías.
+    
     match /users/{userId}/categories/{categoryId} {
-      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserId(userId);
     }
-
-    // Los usuarios solo pueden realizar operaciones CRUD en sus propios préstamos.
-    match /users/{userId}/loans/{loanId} {
-      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Los usuarios solo pueden realizar operaciones CRUD en sus propias suscripciones.
+    
     match /users/{userId}/subscriptions/{subscriptionId} {
-      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserId(userId);
     }
-
-    // Los usuarios solo pueden realizar operaciones CRUD en sus propias tarjetas de crédito.
+    
+    match /users/{userId}/loans/{loanId} {
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserId(userId);
+    }
+    
     match /users/{userId}/creditCards/{cardId} {
-      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserId(userId);
     }
-
-    // Los usuarios solo pueden realizar operaciones CRUD en sus propios presupuestos.
-    match /users/{userId}/budgets/{budgetId} {
-      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Los usuarios solo pueden realizar operaciones CRUD en sus propias compras financiadas.
+    
     match /users/{userId}/financedPurchases/{purchaseId} {
-      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserId(userId);
     }
-
+    
+    match /users/{userId}/budgets/{budgetId} {
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserId(userId);
+    }
+    
+    match /users/{userId}/savingsGoals/{goalId} {
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserId(userId);
+    }
+    
+    // Rule for the nested 'contributions' collection.
+    // This rule is what allows the collectionGroup query to work securely,
+    // as it checks the ownership based on the {userId} in the path for each document.
+    match /users/{userId}/savingsGoals/{goalId}/contributions/{contributionId} {
+      allow read, update, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && hasCorrectUserId(userId);
+    }
   }
 }
