@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useData } from '../../contexts/DataContext';
-import { Input } from '../ui/Input';
-import { Button } from '../ui/Button';
+import { Input, Button } from '../../styles/StyledComponents';
 
 const FormTitle = styled.h3`
   font-size: 1.2rem;
