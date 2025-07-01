@@ -1,59 +1,109 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useData } from '../../contexts/DataContext';
+import { Card } from '../../components/ui/Card';
+import { FaTrash } from 'react-icons/fa';
 
-const ListContainer = styled.div`
-  background: #fff;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+const ListTitle = styled.h2`
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
 `;
 
-const CategoryItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
-
-  &:last-child {
-    border-bottom: none;
-  }
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
 `;
 
-const Button = styled.button`
-  padding: 0.5rem 1rem;
+const Th = styled.th`
+  text-align: left;
+  padding: 0.8rem;
+  background-color: #f8f9fa;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+`;
+
+const Td = styled.td`
+  padding: 0.8rem;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: middle;
+`;
+
+const TypeBadge = styled.span`
+  padding: 0.25em 0.6em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  background-color: ${props => props.type === 'income' ? '#28a745' : '#dc3545'};
+`;
+
+const DeleteButton = styled.button`
+  background: none;
   border: none;
-  border-radius: 4px;
+  color: #dc3545;
   cursor: pointer;
-  font-size: 0.9rem;
-  background-color: #dc3545;
-  color: white;
+  font-size: 1rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
 
   &:hover {
-    background-color: #c82333;
+    background-color: #f2dede;
   }
+`;
+
+const NoDataMessage = styled.p`
+  text-align: center;
+  color: #888;
+  padding: 2rem;
 `;
 
 const CategoryList = () => {
   const { categories, deleteCategory } = useData();
 
   return (
-    <ListContainer>
-      <h2>Categorías Existentes</h2>
-      {
-        categories.length > 0 ? (
-          categories.map(cat => (
-            <CategoryItem key={cat.id}>
-              <span>{cat.name} ({cat.type})</span>
-              <Button onClick={() => deleteCategory(cat.id)}>Eliminar</Button>
-            </CategoryItem>
-          ))
-        ) : (
-          <p>No has añadido ninguna categoría todavía.</p>
-        )
-      }
-    </ListContainer>
+    <Card>
+      <ListTitle>Categorías Existentes</ListTitle>
+      {categories.length > 0 ? (
+        <Table>
+          <thead>
+            <tr>
+              <Th>Nombre</Th>
+              <Th>Tipo</Th>
+              <Th style={{ textAlign: 'right' }}>Acciones</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {categories.map(cat => (
+              <tr key={cat.id}>
+                <Td>{cat.name}</Td>
+                <Td>
+                  <TypeBadge type={cat.type}>
+                    {cat.type === 'income' ? 'Ingreso' : 'Gasto'}
+                  </TypeBadge>
+                </Td>
+                <Td style={{ textAlign: 'right' }}>
+                  <DeleteButton onClick={() => deleteCategory(cat.id)} aria-label={`Eliminar ${cat.name}`}>
+                    <FaTrash />
+                  </DeleteButton>
+                </Td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      ) : (
+        <NoDataMessage>No has añadido ninguna categoría todavía.</NoDataMessage>
+      )}
+    </Card>
   );
 };
 
