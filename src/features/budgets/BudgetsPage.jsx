@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import BudgetForm from './BudgetForm';
-import BudgetList from './BudgetList';
+import BudgetListClean from './BudgetListClean';
 import { PageContainer, Title, Card } from '../../styles/StyledComponents';
 
 const BudgetsPage = () => {
@@ -13,7 +13,7 @@ const BudgetsPage = () => {
         <BudgetForm />
       </Card>
       <Card>
-        <BudgetList />
+        <BudgetListClean />
       </Card>
     </PageContainer>
   );

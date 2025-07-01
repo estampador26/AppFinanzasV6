@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, { useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { db } from '../config/firebase';
 import { collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, collectionGroup, where, runTransaction, doc } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
@@ -70,8 +70,6 @@ export function DataProvider({ children }) {
       });
     });
 
-    // We assume loading is done once all listeners are attached.
-    // A more robust solution might use getDocs for an initial fetch.
     setLoading(false);
 
     return () => {
@@ -222,28 +220,92 @@ export function DataProvider({ children }) {
     return deleteDoc(categoryRef);
   }, [currentUser]);
 
+  const deleteSubscription = useCallback(async (id) => {
+    if (!currentUser) return;
+    const subDocRef = doc(db, 'users', currentUser.uid, 'subscriptions', id);
+    await deleteDoc(subDocRef);
+  }, [currentUser]);
+
+  const deleteCreditCard = useCallback(async (id) => {
+    if (!currentUser) return;
+    const cardDocRef = doc(db, 'users', currentUser.uid, 'creditCards', id);
+    await deleteDoc(cardDocRef);
+  }, [currentUser]);
+
+  const deleteFinancedPurchase = useCallback(async (id) => {
+    if (!currentUser) return;
+    const purchaseDocRef = doc(db, 'users', currentUser.uid, 'financedPurchases', id);
+    await deleteDoc(purchaseDocRef);
+  }, [currentUser]);
+  
+  const deleteSavingsGoal = useCallback(async (id) => {
+    if (!currentUser) return;
+    const goalDocRef = doc(db, 'users', currentUser.uid, 'savingsGoals', id);
+    await deleteDoc(goalDocRef);
+  }, [currentUser]);
+
+  const deleteBudget = useCallback(async (id) => {
+    if (!currentUser) return;
+    const budgetDocRef = doc(db, 'users', currentUser.uid, 'budgets', id);
+    await deleteDoc(budgetDocRef);
+  }, [currentUser]);
+
+  const budgetsWithSpent = useMemo(() => {
+    if (!budgets.length) return [];
+
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    return budgets
+      .filter(b => b.year === currentYear && b.month === currentMonth + 1)
+      .map(budget => {
+        const spent = transactions
+          .filter(t => 
+            t.categoryId === budget.categoryId &&
+            t.type === 'expense' &&
+            t.date && typeof t.date.toDate === 'function' &&
+            t.date.toDate().getMonth() === currentMonth &&
+            t.date.toDate().getFullYear() === currentYear
+          )
+          .reduce((acc, curr) => acc + curr.amount, 0);
+        
+        const progress = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
+
+        return {
+          ...budget,
+          spent,
+          progress: Math.min(progress, 100),
+        };
+      });
+  }, [budgets, transactions]);
+
   const value = {
+    loading,
     transactions,
-    categories,
     subscriptions,
     loans,
     creditCards,
     financedPurchases,
-    budgets,
+    budgets: budgetsWithSpent,
+    categories,
     savingsGoals,
     contributions,
     addTransaction,
     addSubscription,
+    deleteSubscription,
     addLoan,
     addCreditCard,
+    deleteCreditCard,
     addFinancedPurchase,
+    deleteFinancedPurchase,
     addBudget,
+    deleteBudget,
+    addCategory,
+    updateCategory,
+    deleteCategory,
     addSavingsGoal,
+    deleteSavingsGoal,
     addContribution,
-    addCategory, // Add this
-    updateCategory, // Add this
-    deleteCategory, // Add this
-    loading,
   };
 
   return (
