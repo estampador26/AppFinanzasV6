@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Container, Title, Form, Input, Button, Error, StyledLink } from '../styles/StyledComponents';
+import { PageContainer, Title, Form, Input, Button, Error, StyledLink } from '../styles/StyledComponents';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -36,7 +36,7 @@ const LoginPage = () => {
   };
 
   return (
-    <Container>
+    <PageContainer>
       <Title>Iniciar Sesión</Title>
       {error && <Error>{error}</Error>}
       <Form onSubmit={handleSubmit}>
@@ -57,7 +57,7 @@ const LoginPage = () => {
         <Button type="submit">Iniciar Sesión</Button>
       </Form>
       <p>¿No tienes una cuenta? <StyledLink to="/register">Regístrate</StyledLink></p>
-    </Container>
+    </PageContainer>
   );
 };
 
