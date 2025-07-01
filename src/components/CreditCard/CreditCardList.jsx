@@ -1,85 +1,138 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useData } from '../../contexts/DataContext';
+import { Card } from '../ui/Card';
+import { FaTrash } from 'react-icons/fa';
 
-const ListContainer = styled.div`
-  margin-top: 2rem;
+const ListTitle = styled.h3`
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
 `;
 
-const CardItem = styled.div`
-  background: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 8px;
+const CreditCardItem = styled(Card)`
+  margin-bottom: 1.5rem;
+  position: relative;
+  border-left: 5px solid ${props => props.color || '#007bff'};
+`;
+
+const CardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  border-left: 5px solid #007bff;
 `;
 
-const CardHeader = styled.h3`
-  margin: 0 0 0.5rem 0;
+const CardName = styled.h4`
+  margin: 0;
   color: #333;
+  font-size: 1.2rem;
+  span {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: normal;
+    margin-left: 0.5rem;
+  }
 `;
 
-const CardDetails = styled.p`
-  margin: 0.2rem 0;
-  color: #666;
+const CardDetailsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
 `;
 
-const BalanceDetail = styled.p`
-  margin: 0.5rem 0;
-  color: #333;
+const DetailItem = styled.div`
+  font-size: 0.9rem;
+  color: #495057;
+  
+  strong {
+    display: block;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+`;
+
+const Balance = styled.div`
+  text-align: right;
+  font-size: 1.4rem;
   font-weight: bold;
+  color: #dc3545;
 `;
 
-function CreditCardList() {
-  const { creditCards, transactions, loading } = useData();
+const DeleteButton = styled.button`
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: #f2dede;
+  }
+`;
 
-  const calculateCardBalance = (cardId, closingDay) => {
-    const today = new Date();
-    let startDate = new Date(today.getFullYear(), today.getMonth(), closingDay + 1);
+const NoDataMessage = styled.p`
+  text-align: center;
+  color: #888;
+  padding: 2rem;
+`;
 
-    if (today.getDate() <= closingDay) {
-      // We are in the period before the closing day of the current month
-      // So the cycle started last month
-      startDate.setMonth(startDate.getMonth() - 1);
-    }
+const cardColors = ['#007bff', '#6f42c1', '#20c997', '#fd7e14', '#17a2b8'];
 
-    const balance = transactions
-      .filter(t => 
-        t.cardId === cardId && 
-        t.type === 'expense' && 
-        t.date.toDate() >= startDate
-      )
-      .reduce((acc, t) => acc + t.amount, 0);
-
-    return balance;
-  };
+const CreditCardList = () => {
+  const { creditCards, loading, deleteCreditCard } = useData();
 
   if (loading) {
-    return <p>Cargando tarjetas...</p>;
+    return <NoDataMessage>Cargando tarjetas...</NoDataMessage>;
   }
 
   return (
-    <ListContainer>
-      <h2>Tarjetas Registradas</h2>
+    <div>
+      <ListTitle>Tarjetas Registradas</ListTitle>
       {creditCards.length === 0 ? (
-        <p>Aún no has añadido ninguna tarjeta de crédito.</p>
+        <NoDataMessage>Aún no has añadido ninguna tarjeta de crédito.</NoDataMessage>
       ) : (
-        creditCards.map(card => {
-          const balance = calculateCardBalance(card.id, card.closingDay);
-          return (
-            <CardItem key={card.id}>
-              <CardHeader>{card.cardName} ({card.bank})</CardHeader>
-              <CardDetails>Terminada en: **** **** **** {card.last4Digits}</CardDetails>
-              <CardDetails>Día de cierre: {card.closingDay}</CardDetails>
-              <CardDetails>Día de pago: {card.paymentDay}</CardDetails>
-              <BalanceDetail>Saldo del ciclo actual: {balance.toFixed(2)} €</BalanceDetail>
-            </CardItem>
-          );
-        })
+        creditCards.map((card, index) => (
+          <CreditCardItem key={card.id} color={cardColors[index % cardColors.length]}>
+            <CardHeader>
+              <CardName>
+                {card.cardName}
+                <span>({card.bank})</span>
+              </CardName>
+              <DeleteButton onClick={() => deleteCreditCard(card.id)} aria-label={`Eliminar ${card.cardName}`}>
+                <FaTrash />
+              </DeleteButton>
+            </CardHeader>
+            <DetailItem>
+              <strong>Saldo del Ciclo Actual</strong>
+              <Balance>{(card.balance || 0).toFixed(2)} €</Balance>
+            </DetailItem>
+            <CardDetailsGrid>
+              <DetailItem>
+                <strong>Terminación</strong>
+                **** **** **** {card.last4Digits}
+              </DetailItem>
+              <DetailItem>
+                <strong>Día de Cierre</strong>
+                {card.closingDay}
+              </DetailItem>
+              <DetailItem>
+                <strong>Día de Pago</strong>
+                {card.paymentDay}
+              </DetailItem>
+            </CardDetailsGrid>
+          </CreditCardItem>
+        ))
       )}
-    </ListContainer>
+    </div>
   );
-}
+};
 
 export default CreditCardList;

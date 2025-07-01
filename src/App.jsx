@@ -4,7 +4,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Dashboard from './pages/Dashboard';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import LoansPage from './pages/LoansPage';
-import CreditCardsPage from './components/CreditCard/CreditCardsPage';
+import CreditCardsPage from './pages/CreditCardsPage';
 import FinancedPurchasesPage from './features/financedPurchases/FinancedPurchasesPage';
 import BudgetsPage from './features/budgets/BudgetsPage';
 import SavingsGoalsPage from './features/savings/SavingsGoalsPage';
