@@ -1,5 +1,43 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { useData } from '../../contexts/DataContext';
+import { Button } from '../../styles/StyledComponents';
+
+// --- Styled Components for TransactionForm ---
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const FormTitle = styled.h3`
+  margin: 0;
+  text-align: left;
+  font-weight: 600;
+`;
+
+const Input = styled.input`
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+`;
+
+const Select = styled.select`
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+`;
+
+const ErrorMessage = styled.p`
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin: 0;
+`;
+
+// --- TransactionForm Component ---
 
 const TransactionForm = () => {
   const [amount, setAmount] = useState('');
@@ -39,23 +77,23 @@ const TransactionForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-      <h4>Añadir Nueva Transacción</h4>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <input
+    <Form onSubmit={handleSubmit}>
+      <FormTitle>Añadir Nueva Transacción</FormTitle>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+      <Input
         type="number"
-        placeholder="Monto"
+        placeholder="Importe (€)"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         required
       />
-      <input
+      <Input
         type="text"
-        placeholder="Descripción"
+        placeholder="Descripción (ej: Café con amigos)"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <select value={type} onChange={(e) => {
+      <Select value={type} onChange={(e) => {
         setType(e.target.value);
         if (e.target.value !== 'expense') {
           setCardId('');
@@ -63,25 +101,25 @@ const TransactionForm = () => {
       }}>
         <option value="expense">Gasto</option>
         <option value="income">Ingreso</option>
-      </select>
-      <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
+      </Select>
+      <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
         <option value="" disabled>Selecciona una categoría</option>
         {categories
           .filter(c => c.type === type)
           .map(c => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
-      </select>
+      </Select>
       {type === 'expense' && (
-        <select value={cardId} onChange={(e) => setCardId(e.target.value)}>
+        <Select value={cardId} onChange={(e) => setCardId(e.target.value)}>
           <option value="">Pago con... (Efectivo/Otro)</option>
           {creditCards.map(card => (
             <option key={card.id} value={card.id}>{card.cardName} - {card.bank}</option>
           ))}
-        </select>
+        </Select>
       )}
-      <button type="submit">Añadir</button>
-    </form>
+      <Button type="submit">Añadir Transacción</Button>
+    </Form>
   );
 };
 
