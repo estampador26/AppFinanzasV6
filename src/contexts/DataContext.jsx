@@ -182,7 +182,8 @@ export function DataProvider({ children }) {
           throw new Error("Goal does not exist!");
         }
 
-        const newCurrentAmount = goalDoc.data().currentAmount + contributionAmount;
+        const currentAmount = goalDoc.data().currentAmount || 0;
+        const newCurrentAmount = currentAmount + contributionAmount;
 
         transaction.update(goalRef, { currentAmount: newCurrentAmount });
         
