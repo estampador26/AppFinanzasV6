@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useData } from '../../contexts/DataContext';
-import { Card } from '../../components/ui/Card'; // Asegúrate que la ruta es correcta
-import { Input } from '../../components/ui/Input';
-import { Select } from '../../components/ui/Select';
-import { Button } from '../../components/ui/Button';
+import { Card, Input, Select, Button } from '../../styles/StyledComponents';
 
 const FormTitle = styled.h2`
   font-size: 1.5rem;
