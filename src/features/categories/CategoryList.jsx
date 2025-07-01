@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useData } from '../../contexts/DataContext';
-import { Card } from '../../components/ui/Card';
+import { Card } from '../../styles/StyledComponents';
 import { FaTrash } from 'react-icons/fa';
 
 const ListTitle = styled.h2`
