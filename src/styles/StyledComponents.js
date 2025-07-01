@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 // General Layout
 export const PageContainer = styled.div`
@@ -64,5 +65,27 @@ export const Button = styled.button`
   &:disabled {
     background-color: #ccc;
     cursor: not-allowed;
+  }
+`;
+
+// Error message
+export const Error = styled.p`
+  color: #d9534f;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-align: center;
+`;
+
+// Styled Link
+export const StyledLink = styled(Link)`
+  color: #007bff;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
