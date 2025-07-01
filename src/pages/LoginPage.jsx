@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { AuthContainer, Title, Form, Input, Button, Error, StyledLink } from '../styles/StyledComponents';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -14,35 +15,49 @@ const LoginPage = () => {
     setError('');
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
-      setError('Error al iniciar sesión. Verifica tus credenciales.');
-      console.error(err);
+      console.error("Firebase Error Code:", err.code);
+      switch (err.code) {
+        case 'auth/user-not-found':
+          setError('No se encontró ningún usuario con este correo electrónico.');
+          break;
+        case 'auth/wrong-password':
+          setError('La contraseña es incorrecta. Por favor, inténtalo de nuevo.');
+          break;
+        case 'auth/invalid-email':
+          setError('El formato del correo electrónico no es válido.');
+          break;
+        default:
+          setError('Error al iniciar sesión. Por favor, verifica tus credenciales e inténtalo de nuevo.');
+          break;
+      }
     }
   };
 
   return (
-    <div>
-      <h2>Iniciar Sesión</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
+    <AuthContainer>
+      <Title>Iniciar Sesión</Title>
+      {error && <Error>{error}</Error>}
+      <Form onSubmit={handleSubmit}>
+        <Input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <input
+        <Input
           type="password"
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Iniciar Sesión</button>
-      </form>
-    </div>
+        <Button type="submit">Iniciar Sesión</Button>
+      </Form>
+      <p>¿No tienes una cuenta? <StyledLink to="/register">Regístrate</StyledLink></p>
+    </AuthContainer>
   );
 };
 
