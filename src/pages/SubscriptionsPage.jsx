@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
-
-
+import { PageContainer, Title, Card } from '../styles/StyledComponents';
 import SubscriptionForm from '../components/SubscriptionForm';
 import SubscriptionList from '../components/SubscriptionList';
 
@@ -23,20 +23,24 @@ const SubscriptionsPage = () => {
   
 
   return (
-    <div>
-      <h2>Gestión de Suscripciones</h2>
-                  <p>Aquí podrás añadir, ver y gestionar todas tus suscripciones y servicios recurrentes.</p>
+    <PageContainer>
+      <Link to="/dashboard" style={{ marginBottom: '2rem', display: 'inline-block' }}>{'< Volver al Dashboard'}</Link>
+      <Title>Gestión de Suscripciones</Title>
+      <p>Aquí podrás añadir, ver y gestionar todas tus suscripciones y servicios recurrentes.</p>
 
-      <div>
+      <Card>
         <h3>Coste Anual Total</h3>
-        <p>{totalAnual.toFixed(2)}€</p>
-      </div>
+        <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{totalAnual.toFixed(2)}€</p>
+      </Card>
 
-      <hr />
+      <Card>
+        <SubscriptionForm />
+      </Card>
 
-      <SubscriptionForm />
-      <SubscriptionList subscriptions={subscriptions} loading={loading} />
-    </div>
+      <Card>
+        <SubscriptionList subscriptions={subscriptions} loading={loading} />
+      </Card>
+    </PageContainer>
   );
 };
 

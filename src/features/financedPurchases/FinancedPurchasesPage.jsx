@@ -1,24 +1,20 @@
 import React from 'react';
-import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { PageContainer, Title, Card } from '../../styles/StyledComponents';
 import FinancedPurchaseForm from './FinancedPurchaseForm';
 import FinancedPurchaseList from './FinancedPurchaseList';
-
-const PageContainer = styled.div`
-  padding: 2rem;
-`;
-
-const Title = styled.h1`
-  color: #333;
-  text-align: center;
-  margin-bottom: 2rem;
-`;
 
 function FinancedPurchasesPage() {
   return (
     <PageContainer>
+      <Link to="/dashboard" style={{ marginBottom: '2rem', display: 'inline-block' }}>{'< Volver al Dashboard'}</Link>
       <Title>Seguimiento de Compras Financiadas</Title>
-      <FinancedPurchaseForm />
-      <FinancedPurchaseList />
+      <Card>
+        <FinancedPurchaseForm />
+      </Card>
+      <Card>
+        <FinancedPurchaseList />
+      </Card>
     </PageContainer>
   );
 }

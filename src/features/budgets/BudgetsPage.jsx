@@ -1,14 +1,20 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import BudgetForm from './BudgetForm';
 import BudgetList from './BudgetList';
-import { PageContainer, Title } from '../../styles/StyledComponents';
+import { PageContainer, Title, Card } from '../../styles/StyledComponents';
 
 const BudgetsPage = () => {
   return (
     <PageContainer>
+      <Link to="/dashboard" style={{ marginBottom: '2rem', display: 'inline-block' }}>{'< Volver al Dashboard'}</Link>
       <Title>Gestión de Presupuestos</Title>
-      <BudgetForm />
-      <BudgetList />
+      <Card>
+        <BudgetForm />
+      </Card>
+      <Card>
+        <BudgetList />
+      </Card>
     </PageContainer>
   );
 };
