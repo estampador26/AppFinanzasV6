@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import ExpensesByCategoryPieChart from '../components/reports/ExpensesByCategoryPieChart';
+import IncomeVsExpensesBarChart from '../components/reports/IncomeVsExpensesBarChart';
 
 const ReportsContainer = styled.div`
   padding: 2rem;
@@ -48,7 +49,9 @@ const ReportsPage = () => {
         <ChartWrapper>
           <ExpensesByCategoryPieChart />
         </ChartWrapper>
-        {/* Aquí se pueden añadir más gráficos en el futuro */}
+        <ChartWrapper>
+          <IncomeVsExpensesBarChart />
+        </ChartWrapper>
       </ChartsGrid>
     </ReportsContainer>
   );
