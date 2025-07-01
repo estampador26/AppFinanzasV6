@@ -6,11 +6,7 @@ import TransactionForm from '../features/transactions/TransactionForm';
 import { PageContainer, Title, Card, Button } from '../styles/StyledComponents';
 import styled from 'styled-components';
 
-const NavContainer = styled.nav`
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-`;
+// --- Styled Components for Dashboard ---
 
 const Header = styled.header`
   display: flex;
@@ -18,6 +14,77 @@ const Header = styled.header`
   align-items: center;
   margin-bottom: 1rem;
 `;
+
+const WelcomeMessage = styled.p`
+  margin-bottom: 2rem;
+  color: #555;
+`;
+
+const NavGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+`;
+
+const NavCard = styled(Link)`
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+  }
+`;
+
+const BalanceCard = styled(Card)`
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  text-align: center;
+  margin-bottom: 2rem;
+`;
+
+const BalanceAmount = styled.p`
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+`;
+
+const TransactionList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const TransactionItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f0f0f0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const TransactionDescription = styled.span`
+  color: #555;
+`;
+
+const TransactionAmount = styled.span`
+  font-weight: 600;
+  color: ${props => props.type === 'income' ? '#28a745' : '#dc3545'};
+`;
+
+// --- Dashboard Component ---
 
 const Dashboard = () => {
   const { currentUser, logout } = useAuth();
@@ -50,36 +117,36 @@ const Dashboard = () => {
         <Title>Dashboard</Title>
         <Button onClick={handleLogout}>Cerrar Sesión</Button>
       </Header>
-      <p>Bienvenido, {currentUser?.email}</p>
+      <WelcomeMessage>Bienvenido, {currentUser?.email}</WelcomeMessage>
 
-      <NavContainer>
-        <Link to="/subscriptions">Gestionar Suscripciones</Link>
-        <Link to="/loans">Gestionar Préstamos</Link>
-        <Link to="/credit-cards">Gestionar Tarjetas</Link>
-        <Link to="/financed-purchases">Compras Financiadas</Link>
-        <Link to="/budgets">Gestionar Presupuestos</Link>
-        <Link to="/savings-goals">Metas de Ahorro</Link>
-        <Link to="/categories">Gestionar Categorías</Link>
-        <Link to="/reports">Ver Informes</Link>
-      </NavContainer>
+      <NavGrid>
+        <NavCard to="/reports">Informes</NavCard>
+        <NavCard to="/budgets">Presupuestos</NavCard>
+        <NavCard to="/categories">Categorías</NavCard>
+        <NavCard to="/savings-goals">Metas de Ahorro</NavCard>
+        <NavCard to="/subscriptions">Suscripciones</NavCard>
+        <NavCard to="/loans">Préstamos</NavCard>
+        <NavCard to="/credit-cards">Tarjetas</NavCard>
+        <NavCard to="/financed-purchases">Compras Financiadas</NavCard>
+      </NavGrid>
 
-      <Card>
+      <BalanceCard>
         <h2>Balance Total</h2>
-        <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{balance.toFixed(2)} €</p>
-      </Card>
+        <BalanceAmount>{balance.toFixed(2)} €</BalanceAmount>
+      </BalanceCard>
 
       <Card>
         <h3>Transacciones Recientes</h3>
-        <ul>
+        <TransactionList>
           {transactions.slice(0, 5).map(t => (
-            <li key={t.id}>
-              {t.description || 'Sin descripción'} - 
-              <span style={{ color: t.type === 'income' ? 'green' : 'red' }}>
+            <TransactionItem key={t.id}>
+              <TransactionDescription>{t.description || 'Sin descripción'}</TransactionDescription>
+              <TransactionAmount type={t.type}>
                 {t.type === 'income' ? '+' : '-'}{t.amount.toFixed(2)} €
-              </span>
-            </li>
+              </TransactionAmount>
+            </TransactionItem>
           ))}
-        </ul>
+        </TransactionList>
       </Card>
 
       <Card>
