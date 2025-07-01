@@ -8,6 +8,7 @@ import CreditCardsPage from './components/CreditCard/CreditCardsPage';
 import FinancedPurchasesPage from './features/financedPurchases/FinancedPurchasesPage';
 import BudgetsPage from './features/budgets/BudgetsPage';
 import SavingsGoalsPage from './features/savings/SavingsGoalsPage';
+import CategoriesPage from './features/categories/CategoriesPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { useAuth } from './contexts/AuthContext';
@@ -84,6 +85,15 @@ function App() {
           element={
             <PrivateRoute>
               <SavingsGoalsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route 
+          path="/categories" 
+          element={
+            <PrivateRoute>
+              <CategoriesPage />
             </PrivateRoute>
           }
         />

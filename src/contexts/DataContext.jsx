@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { db } from '../config/firebase';
-import { collection, query, onSnapshot, addDoc, serverTimestamp, Timestamp, collectionGroup, where, runTransaction, doc } from 'firebase/firestore';
+import { collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, collectionGroup, where, runTransaction, doc } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 
 const DataContext = React.createContext();
@@ -228,6 +228,27 @@ export function DataProvider({ children }) {
     }
   }, [currentUser]);
 
+  const addCategory = useCallback((categoryData) => {
+    if (!currentUser) return Promise.reject('No user logged in');
+    const categoriesRef = collection(db, 'users', currentUser.uid, 'categories');
+    return addDoc(categoriesRef, {
+      ...categoryData,
+      userId: currentUser.uid,
+    });
+  }, [currentUser]);
+
+  const updateCategory = useCallback((categoryId, updatedData) => {
+    if (!currentUser) return Promise.reject('No user logged in');
+    const categoryRef = doc(db, 'users', currentUser.uid, 'categories', categoryId);
+    return updateDoc(categoryRef, updatedData);
+  }, [currentUser]);
+
+  const deleteCategory = useCallback((categoryId) => {
+    if (!currentUser) return Promise.reject('No user logged in');
+    const categoryRef = doc(db, 'users', currentUser.uid, 'categories', categoryId);
+    return deleteDoc(categoryRef);
+  }, [currentUser]);
+
   const value = {
     transactions,
     categories,
@@ -246,6 +267,9 @@ export function DataProvider({ children }) {
     addBudget,
     addSavingsGoal,
     addContribution,
+    addCategory, // Add this
+    updateCategory, // Add this
+    deleteCategory, // Add this
     loading,
   };
 
