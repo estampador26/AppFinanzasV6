@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { useData } from '../../contexts/DataContext';
+import { useData } from '../contexts/DataContext';
 import { parseISO, startOfDay, endOfDay } from 'date-fns';
 
 import ExpensesByCategoryPieChart from '../components/reports/ExpensesByCategoryPieChart';
