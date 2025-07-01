@@ -14,8 +14,7 @@ const NoDataMessage = styled.p`
   color: #888;
 `;
 
-const IncomeVsExpensesBarChart = () => {
-  const { transactions } = useData();
+const IncomeVsExpensesBarChart = ({ transactions }) => {
 
   if (transactions.length === 0) {
     return (

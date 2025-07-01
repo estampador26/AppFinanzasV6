@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { useData } from '../../contexts/DataContext';
+import { parseISO, startOfDay, endOfDay } from 'date-fns';
+
 import ExpensesByCategoryPieChart from '../components/reports/ExpensesByCategoryPieChart';
 import IncomeVsExpensesBarChart from '../components/reports/IncomeVsExpensesBarChart';
+import DateRangeSelector from '../components/reports/DateRangeSelector';
+
+import 'react-datepicker/dist/react-datepicker.css';
 
 const ReportsContainer = styled.div`
   padding: 2rem;
@@ -41,16 +47,41 @@ const ChartWrapper = styled.div`
 `;
 
 const ReportsPage = () => {
+  const { transactions } = useData();
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const filteredTransactions = useMemo(() => {
+    if (!startDate || !endDate) {
+      return transactions;
+    }
+    const start = startOfDay(startDate);
+    const end = endOfDay(endDate);
+
+    return transactions.filter(t => {
+      const transactionDate = parseISO(t.date);
+      return transactionDate >= start && transactionDate <= end;
+    });
+  }, [transactions, startDate, endDate]);
+
   return (
     <ReportsContainer>
       <BackLink to="/dashboard">&#8592; Volver al Dashboard</BackLink>
       <Title>Informes y Visualización</Title>
+
+      <DateRangeSelector 
+        startDate={startDate} 
+        setStartDate={setStartDate} 
+        endDate={endDate} 
+        setEndDate={setEndDate} 
+      />
+
       <ChartsGrid>
         <ChartWrapper>
-          <ExpensesByCategoryPieChart />
+          <ExpensesByCategoryPieChart transactions={filteredTransactions} />
         </ChartWrapper>
         <ChartWrapper>
-          <IncomeVsExpensesBarChart />
+          <IncomeVsExpensesBarChart transactions={filteredTransactions} />
         </ChartWrapper>
       </ChartsGrid>
     </ReportsContainer>

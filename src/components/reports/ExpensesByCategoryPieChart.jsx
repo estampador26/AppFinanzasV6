@@ -16,8 +16,8 @@ const NoDataMessage = styled.p`
 // Paleta de colores para el gráfico
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A239EA', '#FF4560', '#775DD0', '#546E7A'];
 
-const ExpensesByCategoryPieChart = () => {
-  const { transactions, categories } = useData();
+const ExpensesByCategoryPieChart = ({ transactions }) => {
+  const { categories } = useData();
 
   const expenseTransactions = transactions.filter(t => t.type === 'expense');
 
