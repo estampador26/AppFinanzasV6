@@ -6,9 +6,10 @@ const TransactionForm = () => {
   const [description, setDescription] = useState('');
   const [type, setType] = useState('expense');
   const [categoryId, setCategoryId] = useState('');
+  const [cardId, setCardId] = useState('');
   const [error, setError] = useState('');
 
-  const { categories, addTransaction } = useData();
+  const { categories, creditCards, addTransaction } = useData();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,12 +24,14 @@ const TransactionForm = () => {
         description,
         type,
         categoryId,
+        ...(cardId && { cardId }),
       });
       // Reset form
       setAmount('');
       setDescription('');
       setType('expense');
       setCategoryId('');
+      setCardId('');
     } catch (err) {
       setError('Error al añadir la transacción.');
       console.error(err);
@@ -52,7 +55,12 @@ const TransactionForm = () => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <select value={type} onChange={(e) => setType(e.target.value)}>
+      <select value={type} onChange={(e) => {
+        setType(e.target.value);
+        if (e.target.value !== 'expense') {
+          setCardId('');
+        }
+      }}>
         <option value="expense">Gasto</option>
         <option value="income">Ingreso</option>
       </select>
@@ -64,6 +72,14 @@ const TransactionForm = () => {
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
       </select>
+      {type === 'expense' && (
+        <select value={cardId} onChange={(e) => setCardId(e.target.value)}>
+          <option value="">Pago con... (Efectivo/Otro)</option>
+          {creditCards.map(card => (
+            <option key={card.id} value={card.id}>{card.cardName} - {card.bank}</option>
+          ))}
+        </select>
+      )}
       <button type="submit">Añadir</button>
     </form>
   );

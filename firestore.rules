@@ -19,5 +19,30 @@ service cloud.firestore {
       allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Los usuarios solo pueden realizar operaciones CRUD en sus propios préstamos.
+    match /users/{userId}/loans/{loanId} {
+      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Los usuarios solo pueden realizar operaciones CRUD en sus propias suscripciones.
+    match /users/{userId}/subscriptions/{subscriptionId} {
+      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Los usuarios solo pueden realizar operaciones CRUD en sus propias tarjetas de crédito.
+    match /users/{userId}/creditCards/{cardId} {
+      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Los usuarios solo pueden realizar operaciones CRUD en sus propios presupuestos.
+    match /users/{userId}/budgets/{budgetId} {
+      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Los usuarios solo pueden realizar operaciones CRUD en sus propias compras financiadas.
+    match /users/{userId}/financedPurchases/{purchaseId} {
+      allow read, write, create, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
   }
 }
