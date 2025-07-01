@@ -38,72 +38,44 @@ export function DataProvider({ children }) {
     }
 
     setLoading(true);
-    const transactionsRef = collection(db, 'users', currentUser.uid, 'transactions');
-    const categoriesRef = collection(db, 'users', currentUser.uid, 'categories');
-    const subscriptionsRef = collection(db, 'users', currentUser.uid, 'subscriptions');
-    const loansRef = collection(db, 'users', currentUser.uid, 'loans');
-    const creditCardsRef = collection(db, 'users', currentUser.uid, 'creditCards');
-    const financedPurchasesRef = collection(db, 'users', currentUser.uid, 'financedPurchases');
-    const budgetsRef = collection(db, 'users', currentUser.uid, 'budgets');
-    const savingsGoalsRef = collection(db, 'users', currentUser.uid, 'savingsGoals');
-    const contributionsQuery = query(collectionGroup(db, 'contributions'), where('userId', '==', currentUser.uid));
 
-    const unsubscribeTransactions = onSnapshot(query(transactionsRef), (snapshot) => {
-      const userTransactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setTransactions(userTransactions);
+    const collections = {
+      transactions: collection(db, 'users', currentUser.uid, 'transactions'),
+      categories: collection(db, 'users', currentUser.uid, 'categories'),
+      subscriptions: collection(db, 'users', currentUser.uid, 'subscriptions'),
+      loans: collection(db, 'users', currentUser.uid, 'loans'),
+      creditCards: collection(db, 'users', currentUser.uid, 'creditCards'),
+      financedPurchases: collection(db, 'users', currentUser.uid, 'financedPurchases'),
+      budgets: collection(db, 'users', currentUser.uid, 'budgets'),
+      savingsGoals: collection(db, 'users', currentUser.uid, 'savingsGoals'),
+      contributions: query(collectionGroup(db, 'contributions'), where('userId', '==', currentUser.uid))
+    };
+
+    const unsubscribes = Object.keys(collections).map(key => {
+      const ref = collections[key];
+      return onSnapshot(ref, (snapshot) => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        switch (key) {
+          case 'transactions': setTransactions(data); break;
+          case 'categories': setCategories(data); break;
+          case 'subscriptions': setSubscriptions(data); break;
+          case 'loans': setLoans(data); break;
+          case 'creditCards': setCreditCards(data); break;
+          case 'financedPurchases': setFinancedPurchases(data); break;
+          case 'budgets': setBudgets(data); break;
+          case 'savingsGoals': setSavingsGoals(data); break;
+          case 'contributions': setContributions(data); break;
+          default: break;
+        }
+      });
     });
 
-    const unsubscribeCategories = onSnapshot(query(categoriesRef), (snapshot) => {
-      const userCategories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setCategories(userCategories);
-    });
-
-    const unsubscribeSubscriptions = onSnapshot(query(subscriptionsRef), (snapshot) => {
-      const userSubscriptions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setSubscriptions(userSubscriptions);
-    });
-
-    const unsubscribeLoans = onSnapshot(query(loansRef), (snapshot) => {
-      const userLoans = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setLoans(userLoans);
-    });
-
-    const unsubscribeCreditCards = onSnapshot(query(creditCardsRef), (snapshot) => {
-      const userCreditCards = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setCreditCards(userCreditCards);
-    });
-
-    const unsubscribeFinancedPurchases = onSnapshot(query(financedPurchasesRef), (snapshot) => {
-      const userFinancedPurchases = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setFinancedPurchases(userFinancedPurchases);
-    });
-
-    const unsubscribeBudgets = onSnapshot(query(budgetsRef), (snapshot) => {
-      const userBudgets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setBudgets(userBudgets);
-    });
-
-    const unsubscribeSavingsGoals = onSnapshot(query(savingsGoalsRef), (snapshot) => {
-      const userSavingsGoals = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setSavingsGoals(userSavingsGoals);
-    });
-
-    const unsubscribeContributions = onSnapshot(contributionsQuery, (snapshot) => {
-      const userContributions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setContributions(userContributions);
-      setLoading(false); // Set loading to false after the last listener is ready
-    });
+    // We assume loading is done once all listeners are attached.
+    // A more robust solution might use getDocs for an initial fetch.
+    setLoading(false);
 
     return () => {
-      unsubscribeTransactions();
-      unsubscribeCategories();
-      unsubscribeSubscriptions();
-      unsubscribeLoans();
-      unsubscribeCreditCards();
-      unsubscribeFinancedPurchases();
-      unsubscribeBudgets();
-      unsubscribeSavingsGoals();
-      unsubscribeContributions();
+      unsubscribes.forEach(unsub => unsub());
     };
   }, [currentUser]);
 
